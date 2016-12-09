@@ -40,12 +40,12 @@ class MLDataset(object):
 			fd = hog(
 					feature.reshape((28, 28)), 
 					orientations	= 9, 
-					pixels_per_cell	= (14, 14), 
+					pixels_per_cell	= (7, 7), 
 					cells_per_block	= (1, 1), 
 					visualise		= False)
 			list_hog_fd.append(fd)
 
-		return np.array(list_hog_fd, 'float64')
+		return np.array(list_hog_fd, Datatypes.FLOAT64)
 
 	def _normalizeFeatures(self, hogFeatures):
 		# Normalize the features

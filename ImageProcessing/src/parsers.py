@@ -30,6 +30,11 @@ class ImageParser(object):
 	def _getGrayscale(self):
 		""" Convert to grayscale and apply Gaussian filtering """
 		grayImage = cv2.cvtColor(self.__image, cv2.COLOR_BGR2GRAY)
+
+		""" 
+			Could also open and close image to fill holes 
+			and remove small noise pixels
+		"""
 		return cv2.GaussianBlur(
 					src 	= grayImage, 
 					ksize 	= (5, 5), 
@@ -40,7 +45,7 @@ class ImageParser(object):
 		"""
 		static threshold works better when there are small lines that get 'missed'
 		but really the adaptiveThreshold is better
-
+		"""
 		ret_, imageThreshold = cv2.threshold(
 								grayscaleImage, 
 								90, 
@@ -57,6 +62,7 @@ class ImageParser(object):
 					thresholdType 	= cv2.THRESH_BINARY_INV,
 					blockSize 		= 5,
 					C 				= 7)
+		"""
 
 	def _getContours(self, imageThreshold):
 		# Find contours in the image
@@ -71,7 +77,7 @@ class ImageParser(object):
 		roi_hog_fd = hog(
 						roi, 
 						orientations	= 9, 
-						pixels_per_cell	= (14, 14), 
+						pixels_per_cell	= (7, 7), 
 						cells_per_block	= (1, 1), 
 						visualise		= False)
 		roi_hog_fd = self.__pp.transform(
@@ -79,6 +85,7 @@ class ImageParser(object):
 
 		return self.__classifier.predict(roi_hog_fd)[0]
 
+	## region of interest
 	def _getROI(self, x, y, width, height, imageThreshold):
 		# Make the rectangular region around the digit
 		length 	= int(height * 1.6)

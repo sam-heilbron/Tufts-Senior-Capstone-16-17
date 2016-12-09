@@ -15,13 +15,14 @@ from parsers import ImageParser
 
 def main(argv):
 	trainedDigitsFile = "digits_cls.pkl"
-	#imageName = "digits1.jpg"
+	imageName = "digits1.jpg"
 	#imageName = "digits_table_filled.png"
-	imageName = "digits2.jpg"
+	#imageName = "digits2.jpg"
+	
 	inputImagePath = os.path.join("images/raw/", imageName)
 	outputImagePath = os.path.join("images/labeled/", imageName)
 	
-	#train(trainedDigitsFile)
+	train(trainedDigitsFile)
 	print("Finished training data")
 
 	parse(trainedDigitsFile, inputImagePath, outputImagePath)
