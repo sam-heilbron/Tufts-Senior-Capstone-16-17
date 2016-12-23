@@ -1,0 +1,14 @@
+Adaboost:
+	Adaptive Boosting
+	sklearn
+	meta-algorithm
+
+Combine SVM for Digit Recognition (Hierarchical SVMs):
+	n-1 SVM's 
+		What's the most efficient way to create this?
+		
+
+Perhaps some combo of MLP and SVM (seems slightly slower though)
+
+
+

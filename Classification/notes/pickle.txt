@@ -1,0 +1,39 @@
+Pickle library
+	tldr: Pickle has some flaws related to maintainability and vulnerability but neither are large enough to dissuade me from using it for the scope of this project. It is important to note what is pickled though in case changes are made in the future which could cause issues related to pickling
+
+Serialization library
+
+Use Cases:
+	-Sending things between 2 python processes 
+	-Storing random python objects in a database (memcache)
+
+How does it work:
+	Protocol where you write out a type specifier, then dump each item into list
+	Ex: dump_int ---> INT (specifier) int(value) APPEND
+
+	What about objects?
+		func, args = obj.__reduce__()
+			Need to save method for creating object (inverse of __reduce__ function)
+			Need to save class type
+			Need to save class attributes
+
+	What if you have something that can't be pickled?
+		Ex: File. You can't unpickle a reference
+
+
+Security
+	You cannot safely unpickle untrusted data
+
+
+Maintainability:
+Pickle saves class. What happens if you pickle and then that class (not instance) has been removed?
+
+Pickle ties you to whatever representation was at the time you pickled it (by default). You can create a custom __reduce__ but that requires extra work
+
+
+Alternative:
+	Create custom dump and load methods to ensure that you control how the serialization occurs
+
+
+
+

@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-
-
 from sklearn import datasets
 from skimage.feature import hog
 from sklearn import preprocessing

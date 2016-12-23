@@ -1,0 +1,30 @@
+Image Processing:
+
+	1. Image Preprocessing (Jack S)
+		-Goal is to preprocess image (with data) effectively
+		-Perhaps differnet preprocessing depending on the data
+		-Static threshold v adaptive threshold (which one works when)
+		-Noise removal (Gaussian blur at the moment)
+		-Some way of throwing out images that are too small (these are noise)
+		-HOG (Histogram of Gradient) variations and the effects (block size, cell size)
+		-Goal: Produce the cleanest image AND find individual characters properly
+
+	2. Custom ML training and predictive models (Sam H)
+		-Analyze / Compare various ML methods
+		-Measure effectiveness of labeling images and characters (a-z and other)
+		-Find datasets that help effectively train
+		-See if using some methods together would be more effective
+		-Possible 2 (or 3) separate ways and then they each predict (and vote)
+		-Goal: Given an image, predict the value as effectively as possible (perhaps something with kids handwriting too)
+
+	3. Number and Letter aggregate (Sam W)
+		-Use pytesseract to take existing characters and determine if it's all 1 word or separate
+		-Perhaps a custom ML approach is required, perhaps there's an out of the box solution
+		-Make it flexible so that in some cases, a word is determined if we know it's in a word bank (like a students name), in other cases the predicted word (even though it's not in the dictionary) is presented and finally sometimes the predicted word is changed to the closest dictionary word. 
+		-Focus mainly on taking existing characters and getting data. Don't worry about handwriting
+		-Goal: Given a set of characters, perform aggregation to produce words/phrases
+
+
+Other Possible Focuses:
+	1. Image analysis based off hand strokes
+	2. Amit Patel (using TensorFlow..working on AI/Deep Learning)
