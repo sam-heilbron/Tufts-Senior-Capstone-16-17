@@ -19,3 +19,6 @@ Security and Maintainability Limitations:
 		-The versions of scikit-learn and its dependencies
 		-The cross validation score obtained on the training data
 	This should make it possible to check that the cross-validation score is in the same range as before.
+
+
+http://pyvideo.org/pycon-us-2014/pickles-are-for-delis-not-software.html

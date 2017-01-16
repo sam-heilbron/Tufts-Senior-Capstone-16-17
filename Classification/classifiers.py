@@ -48,8 +48,6 @@ class LinearSVM(object):
 
 
 
-
-
 class LinearSVM_HOG(object):
 	""" Linear SVM with HOG feature extraction (preprocessing) 
 
