@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 
 from sklearn.externals import joblib
 from sklearn.svm import LinearSVC
@@ -9,7 +10,27 @@ import numpy as np
 
 from enums import Datatypes
 
-class LinearSVM(object):
+class Classifier(object):
+	def __init__(
+			self,
+			datasetClass, 
+			preProcessing, 
+			classifier,
+			outputFile):
+		self.datasetClass 		= datasetClass
+		self.preProcessing 		= preProcessing
+		self.classifier 		= classifier
+		self.outputFile			= outputFile
+
+	# Save the classifier
+	def _saveToFile(self):
+		joblib.dump(
+			(self.classifier, self.preProcessing), 
+			os.path.join("classifiers/", self.outputFile), 
+			compress=3)
+
+
+class LinearSVM(Classifier):
 	""" Linear SVM without preprocessing
 
 	 "one-vs-the-rest” multi-class strategy:
@@ -17,38 +38,34 @@ class LinearSVM(object):
 	 	-Each model decides whether it is apart of that class or not. 
 	"""
 
-	def __init__(self, datasetClass):
-		self.__datasetClass 		= datasetClass
-		self.__preProcessing 		= None
-		self.__classifier 			= None
+
+	def __init__(self, datasetClass, outputFile):
+		Classifier.__init__(
+			self,
+			datasetClass 	= datasetClass, 
+			preProcessing 	= None,
+			classifier 		= LinearSVC(),
+			outputFile 		= outputFile)
 
 	##########################   PUBLIC   ###########################
-	def trainAndSave(self, outputFile):
-		features, labels = self.__datasetClass.getTrainingData()
+	def trainAndSave(self):
+		features, labels = self.datasetClass.getTrainingData()
 
-		# Create an linear SVM object
-		clf = LinearSVC()
-
-		# Perform the training
-		clf.fit(features, labels)
-		self.__classifier = clf
+		self.classifier = self.classifier.fit(features, labels)
 
 		# Save the classifier
-		joblib.dump(
-			(self.__classifier, self.__preProcessing), 
-			outputFile, 
-			compress=3)
+		self._saveToFile()
 
 	def testScore(self):
-		testFeatures, testLabels = self.__datasetClass.getTestData()
+		testFeatures, testLabels = self.datasetClass.getTestData()
 
-		score = self.__classifier.score(testFeatures, testLabels)
+		score = self.classifier.score(testFeatures, testLabels)
 		print("Linear SVM recognition rate: %f" % score)
 
 
 
 
-class LinearSVM_HOG(object):
+class LinearSVM_HOG(Classifier):
 	""" Linear SVM with HOG feature extraction (preprocessing) 
 
 	 "one-vs-the-rest” multi-class strategy:
@@ -57,54 +74,45 @@ class LinearSVM_HOG(object):
 
 	"""
 
-	def __init__(self, datasetClass):
-		self.__datasetClass 		= datasetClass
-		self.__preProcessing 		= None
-		self.__classifier 			= None
+	def __init__(self, datasetClass, outputFile):
+		Classifier.__init__(
+			self,
+			datasetClass 	= datasetClass, 
+			preProcessing 	= preprocessing.StandardScaler(),
+			classifier 		= LinearSVC(),
+			outputFile 		= outputFile)
 
 	##########################   PUBLIC   ###########################
 
-	def trainAndSave(self, outputFile):
-		features, labels = self.__datasetClass.getTrainingData()
+	def trainAndSave(self):
+		features, labels = self.datasetClass.getTrainingData()
 
 		normalizedFeatures = self._normalizeFeatures(
 									self._extractHOGFeatures(features))
 
-		# Create an linear SVM object
-		clf = LinearSVC()
-
-		# Perform the training
-		clf.fit(normalizedFeatures, labels)
-		self.__classifier = clf
+		self.classifier = self.classifier.fit(normalizedFeatures, labels)
 
 		# Save the classifier
-		joblib.dump(
-			(self.__classifier, self.__preProcessing), 
-			outputFile, 
-			compress=3)
+		self._saveToFile()
 		
 
 	def predict(self, roi):
 		# Calculate the HOG features
-		roiHOGFeatures = self._getHOG(
-							roi, 
-							orientations	= 9, 
-							pixels_per_cell	= (7, 7), 
-							cells_per_block	= (1, 1), 
-							visualise		= False)
-		roiHOGFeatures = self.__preProcessing.transform(
+		roiHOGFeatures = self._getHOG(roi)
+
+		roiHOGFeatures = self.preProcessing.transform(
 								np.array([roiHOGFeatures], Datatypes.FLOAT64))
 
-		return self.__classifier.predict(roiHOGFeatures)[0]
+		return self.classifier.predict(roiHOGFeatures)[0]
 
 
 	def testScore(self):
-		testFeatures, testLabels = self.__datasetClass.getTestData()
+		testFeatures, testLabels = self.datasetClass.getTestData()
 
 		normalizedFeatures = self._normalizeFeatures(
 								self._extractHOGFeatures(testFeatures))
 
-		score = self.__classifier.score(normalizedFeatures, testLabels)
+		score = self.classifier.score(normalizedFeatures, testLabels)
 		print("Linear SVM with HOG preprocessing recognition rate: %f" % score)
 
 	########################   PROTECTED   ##########################
@@ -128,7 +136,7 @@ class LinearSVM_HOG(object):
 
 	def _normalizeFeatures(self, hogFeatures):
 		""" Normalize the HOG Features """
-		self.__preProcessing = preprocessing.StandardScaler().fit(hogFeatures)
-		return self.__preProcessing.transform(hogFeatures)
+		self.preProcessing = self.preProcessing.fit(hogFeatures)
+		return self.preProcessing.transform(hogFeatures)
 
 

@@ -7,9 +7,9 @@
 from sklearn import datasets
 from collections import Counter
 from enums import Datatypes
+from enum import Enum
 import numpy as np
 
-from enums import Datatypes
 
 class Dataset(object):
 	def __init__(self):
@@ -37,23 +37,33 @@ class Dataset(object):
 		return Counter(labels)
 
 
-class IntDataset(Dataset):
-	def _extractLabels(self, target):
-		return np.array(target, Datatypes.INT)
+class MLDataset(Dataset):
+	def load(self, dataFile, lastTrainDataRow):
+		dataset		= datasets.fetch_mldata(dataFile)
 
-	def _extractFeatures(self, data):
-		return np.array(data, Datatypes.INT16)
+		labels 		= MLDataset._extractLabels(dataset.target)
+		features 	= MLDataset._extractFeatures(dataset.data)
+
+		self._setTrainData(features[:lastTrainDataRow], labels[:lastTrainDataRow])
+		self._setTestData(features[lastTrainDataRow:], labels[lastTrainDataRow:])
+
+	@staticmethod
+	def _extractLabels(target): return np.array(target, Datatypes.INT)
+
+	@staticmethod
+	def _extractFeatures(data): return np.array(data, Datatypes.INT16)
 
 
-class NISTDataset(IntDataset):
+
+class NISTDataset(MLDataset):
 	def __init__(self):
-		self.load()
-		
-	def load(self, dataFile = "MNIST Original"):
-		dataset = datasets.fetch_mldata(dataFile)
+		MLDataset.load(self, "MNIST Original", 60000)
 
-		labels = self._extractLabels(dataset.target)
-		features = self._extractFeatures(dataset.data)
 
-		self._setTrainData(features[:60000], labels[:60000])
-		self._setTestData(features[60000:], labels[60000:])
+class UCILetterDataset(MLDataset):
+	def __init__(self):
+		MLDataset.load(self, "letter", 15000)
+
+class Chars74KDataset(MLDataset):
+	def __init__(self):
+		MLDataset.load(self, "Chars74K English img", 50000)

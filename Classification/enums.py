@@ -23,4 +23,5 @@ Color = enum(
 Datatypes = enum(
 	FLOAT64 = 'float64',
 	INT		= 'int',
-	INT16	= 'int16')
+	INT16	= 'int16',
+	UINT8	= 'uint8')
